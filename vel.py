@@ -2,6 +2,7 @@
 
 import rospy
 from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import Vector3
 from tf.transformations import euler_from_quaternion
 import time
 
@@ -11,9 +12,9 @@ class PersonVelocityCalculator:
         
         self.last_pose = None
         self.last_time = None
-        self.velocity = None
         
         self.pose_subscriber = rospy.Subscriber('person_tracked', PoseStamped, self.pose_callback)
+        self.velocity_publisher = rospy.Publisher('person_velocity', Vector3, queue_size=10)
         
     def pose_callback(self, pose_msg):
         current_time = time.time()
@@ -28,7 +29,14 @@ class PersonVelocityCalculator:
             velocity_y = position_diff_y / time_diff
             velocity_z = position_diff_z / time_diff
             
-            self.velocity = (velocity_x, velocity_y, velocity_z)
+            velocity_msg = Vector3(velocity_x, velocity_y, velocity_z)
+            self.velocity_publisher.publish(velocity_msg)
+            
+            print("Person Velocity (m/s):")
+            print("X:", velocity_x)
+            print("Y:", velocity_y)
+            print("Z:", velocity_z)
+            print("===========================")
         
         self.last_pose = pose_msg
         self.last_time = current_time
@@ -37,13 +45,6 @@ class PersonVelocityCalculator:
         rate = rospy.Rate(10)  # 10 Hz
         
         while not rospy.is_shutdown():
-            if self.velocity is not None:
-                print("Person Velocity (m/s):")
-                print("X:", self.velocity[0])
-                print("Y:", self.velocity[1])
-                print("Z:", self.velocity[2])
-                print("===========================")
-            
             rate.sleep()
 
 if __name__ == '__main__':
