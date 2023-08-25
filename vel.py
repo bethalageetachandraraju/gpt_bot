@@ -13,8 +13,8 @@ class PersonVelocityCalculator:
         self.last_pose = None
         self.last_time = None
         
-        self.pose_subscriber = rospy.Subscriber('person_tracked', PoseStamped, self.pose_callback)
-        self.velocity_publisher = rospy.Publisher('person_velocity', Vector3, queue_size=10)
+        self.pose_subscriber = rospy.Subscriber('/people_tracked', PoseStamped, self.pose_callback)
+        self.velocity_publisher = rospy.Publisher('/person_velocity', Vector3, queue_size=10)
         
     def pose_callback(self, pose_msg):
         current_time = time.time()
