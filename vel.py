@@ -53,3 +53,4 @@ if __name__ == '__main__':
         velocity_calculator.run()
     except rospy.ROSInterruptException:
         pass
+
